@@ -1,0 +1,91 @@
+SOQL:
+
+FieldList
+
+select id, name from Account where Name = 'Burlington Textiles Corp of America'
+select count() from Account
+
+select Contact.FirstName,Contact.Account.Name from Contact
+
+Select Contact.FirstName,Contact.Account.Name,Contact.Account.Id,Contact.Account.AccountNumber from Contact
+
+typeOfField
+
+List<SObject> s = [Select typeOf what 
+when Account THEN Phone,NumberOfEmployees 
+when Opportunity THEN Amount, CloseDate
+else Name,Email
+END
+FROM EVENT];
+System.debug(s);
+
+GROUP BY 
+
+fieldGroupByList : 
+Select LeadSource, Count(Name) from LEAD GROUP BY LeadSource;
+
+	fieldSubtotalGroupByList :
+Select Status, LeadSource, Count(Name) cnt from LEAD GROUP BY ROLLUP (Status, LeadSource)
+	havingCondition:
+
+Select Name, Count(Id) from Account Group By Name Having Count(Id)>1
+
+Selecting all the Accounts having same Name
+	
+	orderBy
+Select Id, lastName, FirstName from Contact order by lastName
+Sorted in ascending order on lastName
+
+Reserved Characters:
+
+Select Name from Account WHERE Name LIKE 'Bob\'s BBQ'
+
+Select Name from Account WHERE Name LIKE 'Ter%'
+Select all accounts whose name starts with character sequence Ter
+
+Select Name from Account WHERE Name LIKE 'Ter\%'
+Select all accounts whose name exactly matches with four character sequence Ter%
+
+Select Name from Account WHERE Name LIKE 'Ter\%%'
+Select all accounts whose name begins with four character sequence Ter%
+
+Alias
+No. of contact with account name
+Select count() from Contact con, con.Account acc where acc.name = 'BBQ'
+
+Select Name, Id from Account where Name LIKE 'a%'
+
+Select Id, Name from Contact where Name LIKE 'A%' and MailingState='California'
+
+Select Id, Name, MailingState from Contact where Name LIKE 'J%' and MailingState='NC'
+
+Select amount from Opportunity where Calendar_Year(CreatedDate)>2015
+
+Select AccountId from Event where ActivityDate!=null
+
+Select Id from case where contact.firstName=null
+
+Select multi select picklist
+Filters value equals to Computer,English
+Select Id,Subject__c from CustObj__c where Subject__c='Computer;English'
+
+Filters value equals to Computer, English or Math
+Select Id,Subject__c from CustObj__c where Subject__c includes('Computer;English',’Math’)
+
+
+Liat invoices records which are created today and whose customer name is not test
+//Fetch the record via SOQL
+List<APEX_Invoice__c> invoiceList = new List<APEX_Invoice__c>();
+invoiceList = [select id, Name,APEX_customer__r.Name,APEX_Status__c
+               from APEX_Invoice__c where createdDate=today
+AND APEX_Customer__r.Name!='Test'];
+system.debug('We have total of '+invoiceList.size()+' records in the List');
+for(APEX_Invoice__c objInvoice:invoiceList){
+    System.debug('Invoice records '+objInvoice);
+}
+
+
+Select Name, BillingState from Account where BillingState IN ('CA','NY')
+
+Select Name, BillingState from Account where BillingState NOT IN ('CA','NY')
+
