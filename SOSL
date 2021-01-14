@@ -1,0 +1,40 @@
+SOSL:
+SOSL IN SearchGroup:
+
+1.
+
+List<list<SObject>> customerList=[FIND 'ABC*'
+IN NAME  Fields
+RETURNING APEX_customer__c(Id,APEX_Customer__c.Name,APEX_Customer__c.Apex_Customer_Description__c)];
+
+System.debug('the result is '+customerList);
+
+2. 
+
+List<list<SObject>> customerList=[FIND 'ABC*'
+IN ALL  Fields
+RETURNING APEX_customer__c(Id,APEX_Customer__c.Name,APEX_Customer__c.Apex_Customer_Description__c)];
+
+System.debug('the result is '+customerList);
+
+
+List<list<SObject>> customerAccountSearchList= new List<List<sObject>>();
+customerAccountSearchList = [FIND 'ABC*' IN ALL  Fields RETURNING APEX_customer__c(Id,APEX_Customer__c.Name,
+                           APEX_Customer__c.Apex_Customer_Description__c),Account(Id,Name)];
+
+
+APEX_Customer__c[] searchCustomer=(List<APEX_customer__c>)customerAccountSearchList[0];
+
+Account[] searchedAccount=(List<Account>)customerAccountSearchList[1];
+System.debug('the Customer records matching the criteria is '+searchCustomer);
+System.debug('the Account records matching the criteria is '+searchedAccount);
+
+3. 
+
+//http://mytutorialrack.com/
+//Check the complete course here https://mytutorialrack.com/salesforce-platform-developer-1-certification-course/
+
+List<List<SObject>> leadList=[FIND 'MyTutorialRack' IN Name Fields
+RETURNING lead(name, phone where  createddate = THIS_FISCAL_QUARTER) ];
+System.debug('results are '+leadList);
+
