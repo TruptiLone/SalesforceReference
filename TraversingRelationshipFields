@@ -1,0 +1,32 @@
+Traversing the Relationship fields:
+
+Suppose you are creating an invoice and you want to relate that invoice to the customer
+//Create a invoice record and we will relate this to customer Object
+Apex_Invoice__c objInvoice = new Apex_Invoice__c();
+objInvoice.Apex_Customer__c=[select Id from APEX_Customer__c 
+                             where Name ='Customer Creation Test'
+                            LIMIT 1].Id;
+objInvoice.APEX_Status__c='pending';
+insert objInvoice;
+system.debug('Newly created invoice'+objInvoice);
+
+Fetching Child Records
+
+List<APEX_Customer__c> ListCustomers= [Select name,Id,(Select id, name from Invoices__r) 
+ from APEX_Customer__c where Name = 'ABC Customer'];
+System.debug('List Customers :'+ListCustomers);
+List<apex_Invoice__c> listOfInvoices = ListCustomers[0].Invoices__r;  //this is the notation to fetch child records
+
+System.debug('The invoice records related to ABC Customer '+listOfInvoices);
+
+
+Fetching Parent Records
+
+//fetch the parent record using SOQL
+
+List<apex_invoice__c> ListOfInvoicesWithCustomerName = new List<apex_invoice__c>();
+ListOfInvoicesWithCustomerName=[select id, name, Apex_Customer__r.Name from apex_invoice__c LIMIT 10];
+for(apex_invoice__c objInv:ListOfInvoicesWithCustomerName){
+    System.debug('Invoice customer name is '+objInv.Apex_Customer__r.Name);
+}
+
