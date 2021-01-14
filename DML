@@ -1,0 +1,67 @@
+DML (Data Manipulation Language):
+Create and modify records in Salesforce by using the Data Manipulation Language, abbreviated as DML. 
+DML provides a straightforward way to manage records by providing simple statements to insert, update, merge, delete, and restore records.
+
+DML Insert Operation: 
+
+APEX_Customer__c objCust = new APEX_Customer__c();
+objCust.Name='TestABC';
+insert objCust;
+APEX_Invoice__c objInv = new APEX_Invoice__c();
+objInv.APEX_Status__c='Pending';
+objInv.APEX_Amount_Paid__c=1000;
+objInv.APEX_Customer__c=objCust.id;
+insert objInv;
+System.debug('The customer we added '+objCust+'and the corresponding invoice for the customer :'+objInv);
+
+DML UPDATE Operation: 
+
+//Fetch the invoice records which we created today
+//update the status of the invoice records to Paid if they are not in the paid status
+List<APEX_Invoice__c> invoiceList = [Select Id,Name,APEX_status__c,createdDate from APEX_Invoice__c];
+//Create a list to store the records which we need to update
+List<APEX_Invoice__c> updatedInvoiceList=new List<APEX_Invoice__c>();
+
+for(APEX_Invoice__c obj:invoiceList){
+    if(obj.APEX_status__c!='paid'){
+        obj.APEX_status__c='paid';
+        updatedInvoiceList.add(obj);
+    }
+}
+update updatedInvoiceList;
+System.debug('List has been updated and updated value of records are: '+updatedInvoiceList);
+
+Note: Always add the records that needs to be updated to a list and then write a single DML statement to update that List
+
+DML UPSERT Operation: 
+
+//Fetch the record we wanted to update
+//Update the description of record with external id 1234
+//create 10 more customer records
+//Create a list of record we want to create or update
+List<APEX_Customer__c> customerList = new List<APEX_Customer__c>();
+APEX_Customer__c cus =[SELECT id, APEX_External_Id__c, APEX_Customer_Description__c from APEX_Customer__c where
+                           APEX_External_Id__c = '1234'];
+cus.APEX_Customer_Description__c = 'Hello How are you?';
+customerList.add(cus);
+for(Integer i =1; i<10; i++){
+    APEX_Customer__c objcust= new APEX_Customer__c(Name = 'Test'+i,APEX_External_Id__c = '1234'+i);
+   customerList.add(objcust); 
+}
+upsert customerList;
+
+
+DML DELETE Operation: 
+
+//Fetch all the records whose name starts with Test
+List<apex_customer__c> customerList = [SELECT id from apex_customer__c where apex_customer__c.name LIKE 'Test%'];
+delete customerList;
+System.debug ('Success '+customerList.size()+'has been deleted');
+
+DML UNDELETE Operation:
+
+//Fetch all the records whose name starts with Test
+List<apex_customer__c> fetchdeletedCustomer = [SELECT id from apex_customer__c where apex_customer__c.name LIKE 'Test%' ALL ROWS];
+undelete fetchdeletedCustomer;
+System.debug ('Success '+fetchdeletedCustomer.size()+' records has been restored');
+
